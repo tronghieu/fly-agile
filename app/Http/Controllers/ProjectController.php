@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Library\ProjectCreator;
 use App\Repositories\ProjectRepository;
+use App\Repositories\UserRepositoryEloquent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -61,11 +62,14 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
         $data = $request->all();
+        $owner = null;
         if (!isset($data['owner_id']) || $data['owner_id'] == 0) {
-            $data['owner_id'] = Auth::user()->id;
+            $owner = Auth::user();
+        } else {
+            $owner = app(UserRepositoryEloquent::class)->find($data['owner_id']);
         }
 
-        $projectCreator = new ProjectCreator($data, $this->repository);
+        $projectCreator = new ProjectCreator($data, $owner, $this->repository);
         $result = $projectCreator->create();
         return response()->json($result->getData(), $result->getHttpCode());
     }

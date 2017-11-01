@@ -9,11 +9,10 @@
 namespace App\Library;
 
 use App\Entities\Project;
-use App\Repositories\ProjectMemberRepositoryEloquent;
 use App\Repositories\ProjectRepository;
-use App\Repositories\ProjectRoleRepositoryEloquent;
-use App\Validators\ProjectValidator;
+use App\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\MessageBag;
 use Prettus\Validator\Exceptions\ValidatorException;
 
 class ProjectCreator
@@ -26,14 +25,19 @@ class ProjectCreator
     protected $repository;
 
     /**
+     * @var User
+     */
+    protected $owner;
+
+    /**
      * ProjectCreator constructor.
      * @param $data
      * @param ProjectRepository $repository
-     * @param ProjectValidator $validator
      */
-    public function __construct($data, ProjectRepository $repository)
+    public function __construct($data, $owner, ProjectRepository $repository)
     {
         $this->data = $data;
+        $this->owner = $owner;
         $this->repository = $repository;
     }
 
@@ -43,13 +47,17 @@ class ProjectCreator
         $result = new ApiResponseData();
         DB::beginTransaction();
         try {
-            //create project record
-            $project = $this->repository->create($this->data);
+            //validate owner
+            $this->_validateOwner();
+
+            $project = new Project($this->data);
+
+            $project = $this->owner->projects()->save($project);
 
             $this->_initProjectOwner($project);
-
-            $this->_initProject($project);
-            //create project follow template: issue, statuses, task's statuses
+            $this->_initProjectIssueTypes($project);
+            $this->_initProjectIssueStatuses($project);
+            $this->_initProjectTaskStatuses($project);
 
             //return data
             $result->setData('project', $project);
@@ -57,6 +65,7 @@ class ProjectCreator
             var_dump($result); exit;
 //            DB::commit();
         } catch (ValidatorException $e) {
+            var_dump($e);
             DB::rollback();
             $result->setData('error', true);
             $result->setData('message', $e->getMessage());
@@ -65,7 +74,7 @@ class ProjectCreator
         return $result;
     }
 
-    private function _initProject(Project $project) {
+    private function _initProjectIssueTypes(Project $project) {
     }
 
     private function _initProjectOwner(Project $project) {
@@ -73,8 +82,23 @@ class ProjectCreator
             'name' => config('settings.project_templates.first_role')
         ]);
 
-        var_dump($role); exit;
+        $this->owner->roles()->attach($role->id, [
+            'is_admin' => true
+        ]);
+    }
 
-        $projectMemberRepository = app(ProjectMemberRepositoryEloquent::class);
+    private function _validateOwner()
+    {
+        if (!($this->owner instanceof User)) {
+            throw new ValidatorException(new MessageBag(['owner_id' => 'Project owner is required!']));
+        }
+    }
+
+    private function _initProjectIssueStatuses($project)
+    {
+    }
+
+    private function _initProjectTaskStatuses($project)
+    {
     }
 }

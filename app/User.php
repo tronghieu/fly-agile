@@ -33,10 +33,10 @@ class User extends Authenticatable
      */
     public function projects()
     {
-        return $this->hasMany('App\Entities\Project');
+        return $this->hasMany('App\Entities\Project', 'owner_id');
     }
 
     public function roles() {
-        return $this->belongsToMany('App\Entities\ProjectRole', 'project_member', 'role_id', 'user_id');
+        return $this->belongsToMany('App\Entities\ProjectRole', 'project_members', 'user_id', 'role_id');
     }
 }
