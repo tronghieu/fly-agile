@@ -17,8 +17,7 @@ class CreateProjectRolesTable extends Migration
             $table->increments('id');
             $table->integer('project_id', false, true)->nullable()->index();
             $table->string('name');
-            $table->boolean('able_to_estimate')
-                ->default(false);
+            $table->boolean('able_to_estimate')->default(false);
             $table->timestamps();
 
             /*$table->foreign('project_id')

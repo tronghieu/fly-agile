@@ -9,8 +9,9 @@
 namespace App\Library;
 
 use App\Entities\Project;
-use App\Entities\ProjectRole;
+use App\Repositories\ProjectMemberRepositoryEloquent;
 use App\Repositories\ProjectRepository;
+use App\Repositories\ProjectRoleRepositoryEloquent;
 use App\Validators\ProjectValidator;
 use Illuminate\Support\Facades\DB;
 use Prettus\Validator\Exceptions\ValidatorException;
@@ -45,12 +46,16 @@ class ProjectCreator
             //create project record
             $project = $this->repository->create($this->data);
 
-            $this->initProject($project);
+            $this->_initProjectOwner($project);
+
+            $this->_initProject($project);
             //create project follow template: issue, statuses, task's statuses
 
             //return data
             $result->setData('project', $project);
-            DB::commit();
+
+            var_dump($result); exit;
+//            DB::commit();
         } catch (ValidatorException $e) {
             DB::rollback();
             $result->setData('error', true);
@@ -60,11 +65,16 @@ class ProjectCreator
         return $result;
     }
 
-    public function initProject(Project $project) {
-        //create project role
-        $projectRole = new ProjectRole([
-            'project_id' => $project->id,
+    private function _initProject(Project $project) {
+    }
+
+    private function _initProjectOwner(Project $project) {
+        $role = $project->roles()->create([
             'name' => config('settings.project_templates.first_role')
         ]);
+
+        var_dump($role); exit;
+
+        $projectMemberRepository = app(ProjectMemberRepositoryEloquent::class);
     }
 }

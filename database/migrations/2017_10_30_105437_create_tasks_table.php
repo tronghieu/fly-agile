@@ -18,10 +18,10 @@ class CreateTasksTable extends Migration
             $table->integer('status_id', false, true)->nullable()->index();
             $table->integer('task_status_id', false, true)->nullable()->index();
             $table->string('title');
-            $table->text('description');
+            $table->text('description')->nullable();
 
-            $table->double('estimate', 10, 2);
-            $table->double('consumed', 10, 2);
+            $table->double('estimate', 10, 2)->default(0);
+            $table->double('consumed', 10, 2)->default(0);
 
             //user
             $table->integer('create_by', false, true)->nullable();

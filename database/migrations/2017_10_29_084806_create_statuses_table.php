@@ -20,8 +20,8 @@ class CreateStatusesTable extends Migration
             $table->integer('issue_type_id', false, true)->nullable()->index();
             $table->string('name');
             $table->string('color');
-            $table->bigInteger('ordering_id');
-            $table->timestampTz('deleted_at');
+            $table->bigInteger('ordering_id')->nullable();
+            $table->timestampTz('deleted_at')->nullable();
             $table->timestampsTz();
 
             /*$table->foreign('project_id')

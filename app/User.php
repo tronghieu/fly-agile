@@ -27,4 +27,16 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    /**
+     * Get the comments for the blog post.
+     */
+    public function projects()
+    {
+        return $this->hasMany('App\Entities\Project');
+    }
+
+    public function roles() {
+        return $this->belongsToMany('App\Entities\ProjectRole', 'project_member', 'role_id', 'user_id');
+    }
 }

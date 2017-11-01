@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Library\ProjectCreator;
 use App\Repositories\ProjectRepository;
-use App\Validators\ProjectValidator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,7 +17,6 @@ class ProjectController extends Controller
     /**
      * ProjectController constructor.
      * @param ProjectRepository $repository
-     * @param ProjectValidator $validator
      */
     public function __construct(ProjectRepository $repository)
     {
@@ -33,7 +31,15 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json([
+            'projects' => $this->repository->all()
+        ]);
+    }
+
+    public function myProjects() {
+        return response()->json([
+            'projects' => Auth::user()->projects()
+        ]);
     }
 
     /**

@@ -20,7 +20,7 @@ class CreateTaskStatusesTable extends Migration
             $table->string('name');
             $table->string('color');
             $table->bigInteger('ordering_id');
-            $table->timestampTz('deleted_at');
+            $table->timestampTz('deleted_at')->nullable();
             $table->timestampsTz();
         });
     }

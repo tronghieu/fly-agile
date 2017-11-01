@@ -21,8 +21,8 @@ class CreateIssuesTable extends Migration
             $table->integer('issue_type_id', false, true)->nullable();
             $table->integer('status_id', false, true)->nullable();
 //            $table->integer('closed_in', false, true)->nullable();
-            $table->double('estimate_points', 10, 2);
-            $table->double('consumed_points', 10, 2);
+            $table->double('estimate_points', 10, 2)->default(0);
+            $table->double('consumed_points', 10, 2)->default(0);
             $table->bigInteger('ordering');
 
             //issue's options

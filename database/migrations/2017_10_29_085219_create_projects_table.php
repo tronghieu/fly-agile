@@ -17,19 +17,19 @@ class CreateProjectsTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('slug');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->boolean('is_closed')->default(false);
             $table->boolean('is_deleted')->default(false);
             $table->integer('owner_id', false, true)->nullable()->index();
             //time
-            $table->timestampTz('closed_at');
-            $table->timestampTz('deleted_at');
+            $table->timestampTz('closed_at')->nullable();
+            $table->timestampTz('deleted_at')->nullable();
             $table->timestamps();
 
             //relation
-            /*$table->foreign('owner_id')
+            $table->foreign('owner_id')
                 ->references('id')->on('users')
-                ->onDelete('cascade');*/
+                ->onDelete('cascade');
         });
     }
 
