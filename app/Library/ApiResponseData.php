@@ -9,6 +9,8 @@
 namespace App\Library;
 
 
+use App\Entities\Project;
+
 class ApiResponseData
 {
     protected $httpCode = 200;
@@ -45,5 +47,9 @@ class ApiResponseData
     public function setData($key, $value)
     {
         $this->data[$key] = $value;
+    }
+
+    public static function projectTransform(Project $project) {
+        return Project::with(['roles', 'issueTypes', 'issueStatuses', 'taskStatuses'])->find($project->id)->toArray();
     }
 }

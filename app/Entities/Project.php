@@ -4,6 +4,7 @@ namespace App\Entities;
 
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Prettus\Repository\Contracts\Transformable;
 use Prettus\Repository\Traits\TransformableTrait;
 
@@ -35,6 +36,20 @@ class Project extends Model implements Transformable
      */
     public function roles()
     {
-        return $this->hasMany('App\Entities\ProjectRole');
+        return $this->hasMany(ProjectRole::class);
+    }
+
+    public function issueTypes()
+    {
+        return $this->hasMany(IssueType::class);
+    }
+
+    public function issueStatuses()
+    {
+        return $this->hasMany(Status::class);
+    }
+
+    public function taskStatuses() {
+        return $this->hasMany(TaskStatus::class);
     }
 }

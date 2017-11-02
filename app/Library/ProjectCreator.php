@@ -8,7 +8,10 @@
 
 namespace App\Library;
 
+use App\Entities\IssueType;
 use App\Entities\Project;
+use App\Entities\Status;
+use App\Entities\TaskStatus;
 use App\Repositories\ProjectRepository;
 use App\User;
 use Illuminate\Support\Facades\DB;
@@ -59,12 +62,11 @@ class ProjectCreator
             $this->_initProjectIssueStatuses($project);
             $this->_initProjectTaskStatuses($project);
 
-            //return data
-            $result->setData('project', $project);
+            $result->setData('project', ApiResponseData::projectTransform($project));
 
-            var_dump($result); exit;
-//            DB::commit();
-        } catch (ValidatorException $e) {
+//            var_dump($result); exit;
+            DB::commit();
+        } catch (\Exception $e) {
             var_dump($e);
             DB::rollback();
             $result->setData('error', true);
@@ -75,6 +77,13 @@ class ProjectCreator
     }
 
     private function _initProjectIssueTypes(Project $project) {
+        $types = config('settings.project_templates.issue_types');
+        foreach ($types as $type) {
+            $issueType = new IssueType($type);
+            $issueType->project_id = $project->id;
+            $issueType->moveToTail();
+            $issueType->save();
+        }
     }
 
     private function _initProjectOwner(Project $project) {
@@ -96,9 +105,23 @@ class ProjectCreator
 
     private function _initProjectIssueStatuses($project)
     {
+        $statuses = config('settings.project_templates.statuses');
+        for ($i = 0; $i < sizeof($statuses); ++$i) {
+            $status = new Status($statuses[$i]);
+            $status->project_id = $project->id;
+            $status->moveToTail();
+            $status->save();
+        }
     }
 
     private function _initProjectTaskStatuses($project)
     {
+        $statuses = config('settings.project_templates.task_statuses');
+        for ($i = 0; $i < sizeof($statuses); ++$i) {
+            $status = new TaskStatus($statuses[$i]);
+            $status->project_id = $project->id;
+            $status->moveToTail();
+            $status->save();
+        }
     }
 }
