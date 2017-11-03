@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Entities\Project;
+use App\Library\ApiResponseData;
 use App\Library\ProjectCreator;
 use App\Repositories\ProjectRepository;
 use App\Repositories\UserRepositoryEloquent;
@@ -33,13 +35,14 @@ class ProjectController extends Controller
     public function index()
     {
         return response()->json([
-            'projects' => $this->repository->all()
+            'projects' => $this->repository->with(Project::$relationDeclare)->all()
         ]);
     }
 
     public function myProjects() {
         return response()->json([
-            'projects' => Auth::user()->projects()
+            'projects' => $this->repository->with(Project::$relationDeclare)
+                ->findByField('owner_id', \Auth::user()->id)
         ]);
     }
 
@@ -61,7 +64,7 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->all();
+        $data = $request->only('name', 'description', 'owner_id');
         $owner = null;
         if (!isset($data['owner_id']) || $data['owner_id'] == 0) {
             $owner = Auth::user();
@@ -82,7 +85,9 @@ class ProjectController extends Controller
      */
     public function show($id)
     {
-        //
+        return response()->json([
+            'projects' => $this->repository->with(Project::$relationDeclare)->find($id)
+        ]);
     }
 
     /**
@@ -105,7 +110,26 @@ class ProjectController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = $request->only(['name', 'description']);
+        $result = new ApiResponseData();
+        /** @var Project $project */
+        $project = $this->repository->find($id);
+        if (null == $project) {
+            $result->setData('error', true);
+            $result->setData('message', "Project was not found with id: {$id}");
+            $result->setHttpCode(404);
+        } else {
+            try {
+                $this->repository->update($data, $id);
+                $result->setData('project', Project::with(Project::$relationDeclare)->find($project->id)->toArray());
+            } catch (\Exception $e) {
+                var_dump($e);
+                $result->setData('error', true);
+                $result->setData('message', $e->getMessage());
+            }
+        }
+
+        return response($result->getData(), $result->getHttpCode());
     }
 
     /**
@@ -116,6 +140,10 @@ class ProjectController extends Controller
      */
     public function destroy($id)
     {
-        //
+        if($this->repository->delete($id)) {
+            return response("Deleted!");
+        } else {
+            return response("Something went wrong!", 500);
+        }
     }
 }

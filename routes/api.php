@@ -14,7 +14,8 @@ use Illuminate\Http\Request;
 */
 
 Route::middleware(['auth:api'])->group(function () {
-    Route::resource('project', 'ProjectController');
-    Route::get('my_projects', 'ProjectController@myProjects');
+    Route::apiResource('project', 'ProjectController');
+    Route::apiResource('issue', 'IssueController');
+    Route::get('project/mine', 'ProjectController@myProjects');
     Route::get('me', 'MeController@index');
 });

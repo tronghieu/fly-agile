@@ -19,6 +19,7 @@ class CreateTaskStatusesTable extends Migration
             $table->integer('project_id', false, true)->nullable()->index();
             $table->string('name');
             $table->string('color');
+            $table->boolean('is_closed')->default(false);
             $table->bigInteger('ordering_id');
             $table->timestampTz('deleted_at')->nullable();
             $table->timestampsTz();

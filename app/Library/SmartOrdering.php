@@ -8,8 +8,6 @@
 
 namespace App\Library;
 
-
-use Illuminate\Database\Eloquent\Model;
 use Prettus\Repository\Contracts\RepositoryInterface;
 
 trait SmartOrdering
@@ -17,7 +15,11 @@ trait SmartOrdering
     public function moveToTail() {
         $repository = $this->createRepository();
         $orderIdCol = $this->orderIdColumn();
-        $before = $repository->orderBy($orderIdCol, 'DESC')->first();
+        $before = $repository->scopeQuery(function($query){
+                return $query
+                    ->where('project_id', $this->project_id)
+                    ->orderBy('ordering_id','DESC');
+            })->first();
         if (null == $before) {
             $this->{$orderIdCol} = CoordinatesAllocator::firstId;
         } else {

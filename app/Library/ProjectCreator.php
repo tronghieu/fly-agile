@@ -54,17 +54,17 @@ class ProjectCreator
             $this->_validateOwner();
 
             $project = new Project($this->data);
+            $this->data['owner_id'] = $this->owner->id;
 
-            $project = $this->owner->projects()->save($project);
+            $project = $this->repository->create($this->data);
 
             $this->_initProjectOwner($project);
             $this->_initProjectIssueTypes($project);
             $this->_initProjectIssueStatuses($project);
             $this->_initProjectTaskStatuses($project);
 
-            $result->setData('project', ApiResponseData::projectTransform($project));
+            $result->setData('project', Project::with(Project::$relationDeclare)->find($project->id)->toArray());
 
-//            var_dump($result); exit;
             DB::commit();
         } catch (\Exception $e) {
             var_dump($e);
@@ -98,7 +98,7 @@ class ProjectCreator
 
     private function _validateOwner()
     {
-        if (!($this->owner instanceof User)) {
+        if (!($this->owner instanceof User) || $this->owner->id <= 0) {
             throw new ValidatorException(new MessageBag(['owner_id' => 'Project owner is required!']));
         }
     }

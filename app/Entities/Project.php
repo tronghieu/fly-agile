@@ -12,6 +12,13 @@ class Project extends Model implements Transformable
 {
     use TransformableTrait, Sluggable;
 
+    public static $relationDeclare = [
+        'roles',
+        'issueTypes',
+        'issueStatuses',
+        'taskStatuses'
+    ];
+
     protected $fillable = [
         'name',
         'description'
