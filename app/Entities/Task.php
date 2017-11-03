@@ -3,33 +3,24 @@
 namespace App\Entities;
 
 use App\Library\SmartOrdering;
-use App\Repositories\IssueRepositoryEloquent;
+use App\Repositories\TaskRepositoryEloquent;
 use Illuminate\Database\Eloquent\Model;
 use Prettus\Repository\Contracts\RepositoryInterface;
 use Prettus\Repository\Contracts\Transformable;
 use Prettus\Repository\Traits\TransformableTrait;
 
-class Issue extends Model implements Transformable
+class Task extends Model implements Transformable
 {
     use TransformableTrait, SmartOrdering;
 
-    public static $relationDeclare = [
-        'tasks',
-    ];
-
     protected $fillable = [
-        'name',
+        'task_status_id',
+        'title',
         'description',
-        'project_id',
-        'issue_type_id',
-        'status_id',
-        'estimate_points',
-        'consumed_points',
-        'ordering',
-        'is_closed',
-        'is_task',
+        'estimate',
+        'consumed',
         'created_by',
-        'assignee',
+
     ];
 
     /**
@@ -44,10 +35,6 @@ class Issue extends Model implements Transformable
 
     public function createRepository(): RepositoryInterface
     {
-        return app(IssueRepositoryEloquent::class);
-    }
-
-    public function tasks() {
-        return $this->hasMany(Task::class);
+        return app(TaskRepositoryEloquent::class);
     }
 }

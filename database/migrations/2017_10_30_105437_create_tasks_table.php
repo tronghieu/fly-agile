@@ -15,7 +15,7 @@ class CreateTasksTable extends Migration
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('status_id', false, true)->nullable()->index();
+            $table->integer('issue_id', false, true)->nullable()->index();
             $table->integer('task_status_id', false, true)->nullable()->index();
             $table->string('title');
             $table->text('description')->nullable();
@@ -24,9 +24,13 @@ class CreateTasksTable extends Migration
             $table->double('consumed', 10, 2)->default(0);
 
             //user
-            $table->integer('create_by', false, true)->nullable();
+            $table->integer('created_by', false, true)->nullable();
             $table->integer('assignee', false, true)->nullable()->index();
 
+            $table->bigInteger('ordering')->nullable();
+            $table->boolean('is_closed')->default(false);
+
+            $table->timestampTz('closed_at')->nullable();
             $table->timestampsTz();
         });
     }

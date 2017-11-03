@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 Route::middleware(['auth:api'])->group(function () {
     Route::apiResource('project', 'ProjectController');
     Route::apiResource('issue', 'IssueController');
+    Route::apiResource('task', 'TaskController');
     Route::get('project/mine', 'ProjectController@myProjects');
     Route::get('me', 'MeController@index');
 });

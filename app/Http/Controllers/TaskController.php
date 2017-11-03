@@ -2,24 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Entities\Issue;
+use App\Entities\Task;
 use App\Library\ApiResponseData;
-use App\Repositories\IssueRepository;
+use App\Repositories\TaskRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class IssueController extends Controller
+class TaskController extends Controller
 {
-    /**
-     * @var IssueRepository
-     */
+    /** @var  TaskRepository */
     protected $repository;
 
     /**
-     * IssueController constructor.
-     * @param IssueRepository $repository
+     * TaskController constructor.
+     * @param TaskRepository $repository
      */
-    public function __construct(IssueRepository $repository)
+    public function __construct(TaskRepository $repository)
     {
         $this->repository = $repository;
     }
@@ -32,7 +30,7 @@ class IssueController extends Controller
      */
     public function index()
     {
-
+        //
     }
 
     /**
@@ -40,10 +38,10 @@ class IssueController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    /*public function create()
+    public function create()
     {
         //
-    }*/
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -58,10 +56,10 @@ class IssueController extends Controller
         $data = $request->all();
         $data['created_by'] = \Auth::id();
         try {
-            $issue = new Issue($data);
-            $issue->moveToTail();
-            $issue = $this->repository->create($issue->getAttributes());
-            $res->setData('issue', $issue);
+            $task = new Task($data);
+            $task->moveToTail();
+            $task = $this->repository->create($task->getAttributes());
+            $res->setData('task', $task);
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
@@ -80,16 +78,15 @@ class IssueController extends Controller
      */
     public function show($id)
     {
+        $task = $this->repository->find($id);
         $res = new ApiResponseData();
-        $issue = $this->repository->with(Issue::$relationDeclare)->find($id);
-        if (empty($issue)) {
-            $res->setData('error', true);
-            $res->setData('message', "Issue not found with id: {$id}");
+        if (empty($task)) {
             $res->setHttpCode(404);
+            $res->setData('error', true);
+            $res->setData('message', "Task not found with id {$id}");
         } else {
-            $res->setData('issue', $issue);
+            $res->setData('task', $task);
         }
-
         return response($res->getData(), $res->getHttpCode());
     }
 
@@ -113,22 +110,7 @@ class IssueController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $res = new ApiResponseData();
-        DB::beginTransaction();
-        $data = $request->all();
-        $data['created_by'] = \Auth::id();
-        try {
-            $issue = $this->repository->update($data, $id);
-            $res->setData('issue', $this->repository->with(Issue::$relationDeclare)->find($issue->id));
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollBack();
-            $res->setData('error', true);
-            $res->setData('message', $e->getMessage());
-            $res->setHttpCode(500);
-        }
-
-        return response($res->getData(), $res->getHttpCode());
+        //
     }
 
     /**

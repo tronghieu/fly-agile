@@ -67,10 +67,10 @@ class ProjectCreator
 
             DB::commit();
         } catch (\Exception $e) {
-            var_dump($e);
             DB::rollback();
             $result->setData('error', true);
             $result->setData('message', $e->getMessage());
+            $result->setHttpCode(500);
         }
 
         return $result;

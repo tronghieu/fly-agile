@@ -48,7 +48,8 @@ return [
             ],
             [
                 'name' => 'Done',
-                'color' => '#0059a8'
+                'color' => '#0059a8',
+                'is_closed' => 'true'
             ],
         ]
     ]
