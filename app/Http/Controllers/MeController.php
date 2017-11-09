@@ -17,6 +17,11 @@ class MeController extends Controller
         return response()->json(Auth::user());
     }
 
+    public function ping(Request $request)
+    {
+        return response()->json(['pong' => true]);
+    }
+
     /**
      * Show the form for creating a new resource.
      *
