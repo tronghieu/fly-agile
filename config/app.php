@@ -181,6 +181,8 @@ return [
          * L5 Repository
          */
         Prettus\Repository\Providers\RepositoryServiceProvider::class,
+
+        Barryvdh\Cors\ServiceProvider::class,
     ],
 
     /*
